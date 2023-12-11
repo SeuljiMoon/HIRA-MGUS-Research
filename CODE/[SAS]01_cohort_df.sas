@@ -3,7 +3,7 @@ libname bb '/vol/userdata13/sta_room417/MSJ' ;
 
 
 /************ MGUS Patients*************/
-/* 1. D472 ¡÷ªÛ∫¥ ¡¯¥‹*/
+/* 1. D472 Ï£ºÏÉÅÎ≥ë ÏßÑÎã®*/
 proc sql;
 create table mgus as
 select *, sum(case when (substr(main_sick,1,4)='D472') then 1 else 0 end) as cnt_d472
@@ -16,13 +16,13 @@ proc sort data=mgus; by jid RECU_FR_DD; run; /*n=9,946*/
 proc sort data=mgus nodupkey out=mgus_once; by jid; run; /*n=9,946*/
 
 
-/* 2. D472 only once ¡¶ø‹*/
+/* 2. D472 only once Ï†úÏô∏*/
 proc freq data= mgus_once; table cnt_d472; run; /*cnt_mgus_main=1 n=1,909*/
 data mgus_once_ex; set mgus_once;
 where cnt_d472 >=2 ; run; /*n=8,037*/
 
 
-/* 3. 2007≥‚, 2008≥‚ diagnosis ¡¶ø‹*/
+/* 3. 2007ÎÖÑ, 2008ÎÖÑ diagnosis Ï†úÏô∏*/
 data mgus_wash; set mgus_once_ex;
 if substr(RECU_FR_DD,1,4) in ('2007', '2008') then ex_mgus_wash=1; else ex_mgus_wash=0; run;
 proc freq data= mgus_wash; table ex_mgus_wash; run; /*ex_mgus_wash=1 n=258*/
@@ -33,7 +33,7 @@ mgus_index_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(REC
 drop ex_mgus_wash ; run; /*n=7,779*/
 
 
-/* MGUS + ªÛ∫¥≥ªø™ */
+/* MGUS + ÏÉÅÎ≥ëÎÇ¥Ïó≠ */
 proc sql;
 create table aa.mgus_cohort_dig as
 select a.jid, a.mgus_index_date, b.SEX_TP_CD, b.PAT_AGE, b.YID,
@@ -43,7 +43,7 @@ left join aa.t200_2023q4_18 as b
 on a.jid=b.jid ;
 quit;
 
-/* 4. D472 ¡¯¥‹ »ƒ 3∞≥ø˘ ¿Ã≥ª C90 diagnosis ¡¶ø‹*/
+/* 4. D472 ÏßÑÎã® ÌõÑ 3Í∞úÏõî Ïù¥ÎÇ¥ C90 diagnosis Ï†úÏô∏*/
 proc sort data= aa.mgus_cohort_dig; by jid RECU_FR_DD; run;
 data aa.mgus_cohort_dig; set aa.mgus_cohort_dig;
 dig_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(RECU_FR_DD,1,4)); format dig_date yymmdd8. ; run;
@@ -75,7 +75,7 @@ quit;
 
 
 
-/*T530 + T200 
+/*T530 + T200 */
 proc sql;
 create table aa.T530_T200 as
 select *
@@ -86,18 +86,18 @@ quit;
 data aa.T530_T200; set aa.T530_T200;
 drug_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(RECU_FR_DD,1,4)); format drug_date yymmdd8.;
 run; 
-*/
 
-/*T530_T200 æ‡π∞¿÷¥¬ ∞Õ∏∏ ªÃ±‚
+
+/*T530_T200 ÏïΩÎ¨ºÏûàÎäî Í≤ÉÎßå ÎΩëÍ∏∞*/
 data aa.T530_T200_mm; set aa.T530_T200;
 where div_cd in ('189901ATB', '463301BIJ', '463302BIJ', '463303BIJ', '485701ACH', '485702ACH',
 				   '588201ACH', '588201ATB', '588202ACH', '588202ATB', '588203ACH', '588203ATB', 
 				   '588204ACH', '588204ATB', '588205ACH', '588205ATB', '588206ACH', '588206ATB',
 				   '588207ACH', '588207ATB') ;
 keep mid jid div_cd drug_date;
-run;*/
+run;
 
-/*T530_T200 æ‡π∞¿÷¥¬ ∞Õ∏∏ ªÃ±‚ √ﬂ∞° 
+/*T530_T200 ÏïΩÎ¨ºÏûàÎäî Í≤ÉÎßå ÎΩëÍ∏∞ Ï∂îÍ∞Ä */
 data aa.T530_T200_mmall; set aa.T530_T200;
 where div_cd in ('189901ATB', '463301BIJ', '463302BIJ', '463303BIJ', '485701ACH', '485702ACH',
 				   '588201ACH', '588201ATB', '588202ACH', '588202ATB', '588203ACH', '588203ATB', 
@@ -111,10 +111,10 @@ where div_cd in ('189901ATB', '463301BIJ', '463302BIJ', '463303BIJ', '485701ACH'
 					'157104ACH',  '157104BIJ',  '157105BIJ', '157106BIJ', '157107BIJ', '157108BIJ', '157130BIJ',
 					'157131BIJ', '157132BIJ', '157133BIJ', '157134BIJ', '157135BIJ', '157136BIJ') ; 
 keep mid jid div_cd drug_date;
-run;*/
+run;
 
 /*T300 + T200 */
-/*T300 æ‡π∞¿÷¥¬ ∞Õ∏∏ ªÃ±‚
+/*T300 ÏïΩÎ¨ºÏûàÎäî Í≤ÉÎßå ÎΩëÍ∏∞*/
 data T300_mm; set aa.T300_2023Q4_18;
 where div_cd in ('189901ATB', '463301BIJ', '463302BIJ', '463303BIJ', '485701ACH', '485702ACH',
 				   '588201ACH', '588201ATB', '588202ACH', '588202ATB', '588203ACH', '588203ATB', 
@@ -132,9 +132,9 @@ quit;
 data aa.T300_T200_mm; set aa.T300_T200_mm;
 drug_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(RECU_FR_DD,1,4)); format drug_date yymmdd8.;
 keep mid jid div_cd drug_date;
-run; */
+run; 
 
-/* T530 mm + T300 mm
+/* T530 mm + T300 mm*/
 proc sql;
 create table aa.T530_T300_mm as
 select * 
@@ -143,11 +143,11 @@ select *
 select *
 	from aa.T300_T200_mm ;
 quit; 
-proc sort data=aa.T530_T300_mm; by jid drug_date; run;*/
+proc sort data=aa.T530_T300_mm; by jid drug_date; run;
 
 
 
-/* + √≥πÊ */
+/* + Ï≤òÎ∞© */
 proc sql;
 create table aa.mgus_dig_drug as
 select a.*, b.drug_date, b.DIV_CD 
@@ -162,7 +162,7 @@ RECU_TO_DD = mdy(substr(RECU_TO_DD,5,2), substr(RECU_TO_DD,7,2), substr(RECU_TO_
 drop recu_fr_dd; run;
 
 
-/* + √≥πÊ_all
+/* + Ï≤òÎ∞©_all*/
 proc sql;
 create table aa.mgus_dig_drug as
 select a.*, b.drug_date, b.DIV_CD 
@@ -173,12 +173,12 @@ quit;
 
 data aa.mgus_dig_drug; set aa.mgus_dig_drug;
 dig_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(RECU_FR_DD,1,4)); format dig_date yymmdd8.;
-drop recu_fr_dd; run;*/
+drop recu_fr_dd; run;
 
 
 
 /************ SMM Patients*************/
-/* 1. SMM ¡÷ªÛ∫¥ ¡¯¥‹
+/* 1. SMM Ï£ºÏÉÅÎ≥ë ÏßÑÎã®*/
 proc sql;
 create table smm as
 select *, count(*) as cnt_smm_main
@@ -189,25 +189,25 @@ order by jid, RECU_FR_DD;
 quit;
 proc sort data=smm nodupkey out=smm_once; by jid; run; /*n=31,769*/
 
-/* 2. SMM only once ¡¶ø‹
+/* 2. SMM only once Ï†úÏô∏*/
 proc freq data= smm_once; table cnt_smm_main; run; /*cnt_smm_main=1 n=4,406*/
-/*data smm_once_ex; set smm_once;
+data smm_once_ex; set smm_once;
 where cnt_smm_main >=2 ; run; /*n=27,363*/
 
 
-/* 3. 2007≥‚, 2008≥‚ diagnosis ¡¶ø‹
+/* 3. 2007ÎÖÑ, 2008ÎÖÑ diagnosis Ï†úÏô∏*/
 data smm_wash; set smm_once_ex;
 if substr(RECU_FR_DD,1,4) in ('2007', '2008') then ex_smm_wash=1; else ex_smm_wash=0; run;
-proc freq data= smm_wash; table ex_smm_wash; run;*/ /*ex_smm_wash=1 n=3,767*/
-/*
+proc freq data= smm_wash; table ex_smm_wash; run; /*ex_smm_wash=1 n=3,767*/
+
 data aa.smm_wash_ex; set smm_wash;
 where ex_smm_wash=0; 
 smm_index_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(RECU_FR_DD,1,4)); format smm_index_date yymmdd8. ;
 drop ex_smm_wash ; run; n=23,596*/
 
-/* 4. C90 ¡¯¥‹ »ƒ 60¿œ ¿Ã≥ª æ‡ √≥πÊ ¡¶ø‹*/
+/* 4. C90 ÏßÑÎã® ÌõÑ 60Ïùº Ïù¥ÎÇ¥ ÏïΩ Ï≤òÎ∞© Ï†úÏô∏*/
 
-/* SMM + √≥πÊ 
+/* SMM + Ï≤òÎ∞© */
 proc sql;
 create table aa.smm_drug as
 select a.jid, a.smm_index_date, b.* 	  
@@ -243,7 +243,7 @@ keep jid smm_index_date;
 run; /*n=8,474*/
 
 
-/* SMM + ªÛ∫¥≥ªø™ */
+/* SMM + ÏÉÅÎ≥ëÎÇ¥Ïó≠ */
 proc sql;
 create table smm_cohort_dig as
 select a.jid, a.smm_index_date, b.SEX_TP_CD, b.PAT_AGE, b.YID,
@@ -253,7 +253,7 @@ left join aa.t200_2023q4_18 as b
 on a.jid=b.jid; 
 quit;
 
-/* + √≥πÊ*/
+/* + Ï≤òÎ∞©*/
 proc sql;
 create table aa.smm_dig_drug as
 select a.*, b.drug_date, b.DIV_CD 
@@ -268,10 +268,10 @@ RECU_TO_DD = mdy(substr(RECU_TO_DD,5,2), substr(RECU_TO_DD,7,2), substr(RECU_TO_
 drop recu_fr_dd; run;
 
 
-/******************************* outcome ¡§¿« **************************************/
+/******************************* outcome Ï†ïÏùò **************************************/
 /*****************************************************
 1. MGUS
-*****************************************************
+*****************************************************/
 proc sql;
 create table c90_diag as
 select jid, min(dig_date) as first_c90_date
@@ -342,7 +342,7 @@ data mgus_totmm_out; set mgus_totmm_out;
 keep jid total_mm_outcome; run;
 
 
-/************* c90_medi_date, (MM) drug √π √≥πÊ¿œ¿Ã end time ***************/
+/************* c90_medi_date, (MM) drug Ï≤´ Ï≤òÎ∞©ÏùºÏù¥ end time ***************/
 proc sort data=aa.mgus_mm_out nodupkey out=mgus_mm_df(drop=fom_tp_cd main_sick sub_sick  dgrslt_tp_cd prcl_sym_tp_cd); 
 by jid;
 run;
@@ -355,7 +355,7 @@ left join mgus_totmm_out as b on a.jid=b.jid;
 quit;
 
 
-/*mm ¡¯«‡ day*/
+/*mm ÏßÑÌñâ day*/
 data a; set aa.mgus_outcome_df;
 where total_mm_outcome=1;
 format first_c90_date yymmdd8.; 
@@ -364,7 +364,7 @@ mm_year = mm_day/365.65;
 run;
 proc univariate data=a; var mm_day mm_year; run;
 
-/*mm ¡¯«‡ day*/
+/*mm ÏßÑÌñâ day*/
 data a; set aa.mgus_outcome_df;
 where mm_outcome=1;
 format first_c90_date yymmdd8.; 
@@ -378,7 +378,7 @@ proc univariate data=a; var mm_day mm_year; run;
 
 /*****************************************************
 2. SMM
-*****************************************************
+*****************************************************/
 proc sql;
 create table c90_diag_smm as
 select jid, min(dig_date) as first_c90_date
@@ -422,7 +422,7 @@ from smm_mm_id a
 left join aa.smm_dig_drug b on a.jid=b.jid; 
 quit;
 
-/************* c90_medi_date, (MM) drug √π √≥πÊ¿œ¿Ã end time ***************/
+/************* c90_medi_date, (MM) drug Ï≤´ Ï≤òÎ∞©ÏùºÏù¥ end time ***************/
 proc sort data=aa.smm_mm_out nodupkey out=aa.smm_outcome_df(drop=fom_tp_cd main_sick sub_sick dgrslt_tp_cd prcl_sym_tp_cd); 
 by jid;
 run;
@@ -441,10 +441,10 @@ proc univariate data=a; var mm_day mm_year; run;
 
 
 
-/******************************* ªÍ¡§∆Ø∑  »Æ¿Œ **************************************/
+/******************************* ÏÇ∞Ï†ïÌäπÎ°Ä ÌôïÏù∏ **************************************/
 
 /***************** MGUS ********************/
-/*1-1. V193 «—π¯µµ æ¯¥¬ ªÁ∂˜*/
+/*1-1. V193 ÌïúÎ≤àÎèÑ ÏóÜÎäî ÏÇ¨Îûå*/
 proc sql;
 create table mgus_v193 as
 select jid, count(*) as cnt_v193
@@ -466,7 +466,7 @@ proc freq data=mgus_v_check; table cnt_v193; run;
 
 
 /***************** SMM ********************/
-/*1-1. V193 «—π¯µµ æ¯¥¬ ªÁ∂˜*/
+/*1-1. V193 ÌïúÎ≤àÎèÑ ÏóÜÎäî ÏÇ¨Îûå*/
 proc sql;
 create table smm_v193 as
 select jid, count(*) as cnt_v193
@@ -487,7 +487,7 @@ if cnt_v193=. then cnt_v193=0; else cnt_v193=cnt_v193; run;
 proc freq data=smm_v_check; table cnt_v193; run;
 
 
-/*SMM-V193 ¡¶ø‹*/
+/*SMM-V193 Ï†úÏô∏*/
 data smm_v_ex; set smm_v_check;
 where cnt_v193>=1; keep jid; run;
 
@@ -500,7 +500,7 @@ quit;
 
 proc freq data=aa.smm_outcome_dfv; table mm_outcome; run;
 
-/******** mm ¡¯«‡ »Æ¿Œ*********/
+/******** mm ÏßÑÌñâ ÌôïÏù∏*********/
 data a; set aa.smm_outcome_dfv;
 where mm_outcome=1;
 format first_c90_date yymmdd8.;
@@ -509,7 +509,7 @@ mm_year = mm_day/365.65;
 run;
 proc univariate data=a; var mm_day mm_year; run;
 
-/******************************* CCI »Æ¿Œ **************************************/
+/******************************* CCI ÌôïÏù∏ **************************************/
 
 /* 1. MGUS : aa.MGUS_MM_OUT */
 proc sql;
@@ -617,12 +617,12 @@ from aa.mgus_outcome_df as a
 left join aa.mgus_cci_yes as b on a.jid=b.jid; 
 quit;
 
-/*¡¯¥‹ Ω√ ≥™¿Ã*/
+/*ÏßÑÎã® Ïãú ÎÇòÏù¥*/
 data aa.mgus_outcci_df2; set aa.mgus_outcci_df;
 index_age=pat_age + (year(mgus_index_date) - year(dig_date));
 run;
 
-/*ªÁ∏¡ : DGRSLT_TP_CD = 4 aa.mgus_outcci_death*/
+/*ÏÇ¨Îßù : DGRSLT_TP_CD = 4 aa.mgus_outcci_death*/
 proc sql;
 create table mgus_death as
 select jid, DGRSLT_TP_CD, RECU_TO_DD, mgus_index_date
@@ -752,12 +752,12 @@ from aa.smm_outcome_dfv as a
 left join aa.smm_cci_yes as b on a.jid=b.jid; 
 quit;
 
-/*¡¯¥‹ Ω√ ≥™¿Ã*/
+/*ÏßÑÎã® Ïãú ÎÇòÏù¥*/
 data aa.smm_outcci_df2; set aa.smm_outcci_df;
 index_age=pat_age + (year(smm_index_date) - year(dig_date));
 run;
 
-/*ªÁ∏¡ : DGRSLT_TP_CD = 4 aa.smm_outcci_death*/
+/*ÏÇ¨Îßù : DGRSLT_TP_CD = 4 aa.smm_outcci_death*/
 proc sql;
 create table smm_death as
 select jid, DGRSLT_TP_CD, RECU_TO_DD, smm_index_date
@@ -781,7 +781,7 @@ proc freq data=aa.smm_outcci_death; table death_yn; run;
 
 
 
-/*index year »Æ¿Œ*/
+/*index year ÌôïÏù∏*/
 data a; set aa.mgus_outcci_death;
 mgus_index_year = year(mgus_index_date); run;
 proc freq data=a; table mgus_index_year*mm_outcome; run;
@@ -791,7 +791,7 @@ smm_index_year = year(smm_index_date); run;
 proc freq data=a; table smm_index_year*mm_outcome; run;
 
 
-/*mm ¡¯«‡ day*/
+/*mm ÏßÑÌñâ day*/
 data a; set aa.mgus_outcci_death;
 where mm_outcome=1;
 mm_day = c90_medi_date-mgus_index_date ;
@@ -834,7 +834,7 @@ run;
 
 
 
-/************C90 ªÁ∏¡ *************/
+/************C90 ÏÇ¨Îßù *************/
 proc sql;
 create table smm as
 select *, count(*) as cnt_smm_main
@@ -845,14 +845,14 @@ order by jid, RECU_FR_DD;
 quit;
 proc sort data=smm nodupkey out=smm_once; by jid; run; /*n=31,769*/
 
-/* 2. SMM only once ¡¶ø‹*/
+/* 2. SMM only once Ï†úÏô∏*/
 proc freq data= smm_once; table cnt_smm_main; run; /*cnt_smm_main=1 n=4,406*/
 data smm_once_ex; set smm_once;
 where cnt_smm_main >=2 ; 
 c90_index_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(RECU_FR_DD,1,4)); format c90_index_date yymmdd8. ;
 run; /*n=27,363*/
 
-/* SMM + ªÛ∫¥≥ªø™ */
+/* SMM + ÏÉÅÎ≥ëÎÇ¥Ïó≠ */
 proc sql;
 create table aa.c90_check as
 select a.jid, a.c90_index_date, b.SEX_TP_CD, b.PAT_AGE, b.YID,
@@ -866,7 +866,7 @@ data aa.c90_check; set aa.c90_check;
 dig_date = mdy(substr(RECU_FR_DD,5,2), substr(RECU_FR_DD,7,2), substr(RECU_FR_DD,1,4)); format dig_date yymmdd8.;
 drop recu_fr_dd; run;
 
-/*ªÁ∏¡ : DGRSLT_TP_CD = 4 aa.smm_outcci_death*/
+/*ÏÇ¨Îßù : DGRSLT_TP_CD = 4 aa.smm_outcci_death*/
 proc sql;
 create table c90_death as
 select jid, DGRSLT_TP_CD, dig_date, c90_index_date
@@ -893,7 +893,7 @@ death_year=death_day/365.65;
 run;
 
 
-/******************************* æ‡π∞ count **************************************/
+/******************************* ÏïΩÎ¨º count **************************************/
 
 /*1. mgus */
 proc sql;
