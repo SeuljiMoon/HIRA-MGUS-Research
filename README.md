@@ -12,4 +12,4 @@ A retrospective study to explore clinical characteristics of multiple myeloma  a
 
 
 #### 03. Venn diagram
-<img src="https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/cdb777b0-5b85-48f5-9c5a-148709a8ab61.png" width="500" height="200"/>
+<img src="https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/cdb777b0-5b85-48f5-9c5a-148709a8ab61.png" width="300" height="200"/>
