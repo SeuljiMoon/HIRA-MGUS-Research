@@ -2,14 +2,14 @@
 A retrospective study to explore clinical characteristics of multiple myeloma  and its precursor disease using HIRA dataset 
 
 #### 01. Transition diagram for 4 state progressive process  
-
-![03 disease_progression](https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/2206a430-142b-44e1-81da-fd9582b9c8d1)
+<img src="https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/90c63d42-fca9-4663-8fea-fa03062b7a9b.png" width="200" height="400"/>
 
 
 
 #### 02. Flow chart of study population
-![01 flow_chart](https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/4ceb65a5-176c-4d42-b494-43f99f50e439) 
+<img src="https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/447ad786-4148-48ba-9942-7e070d7758f3.png" width="200" height="400"/>
+
 
 
 #### 03. Venn diagram
-![02 diagram](https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/f5acf7ea-0e3c-4da1-acc8-d42c28fb24c0) 
+<img src="https://github.com/SeuljiMoon/HIRA-MGUS-Research/assets/129368100/cdb777b0-5b85-48f5-9c5a-148709a8ab61.png" width="200" height="400"/>
