@@ -30,14 +30,14 @@ run;
 
 proc freq data=multi_state; table cohort; run;
 /*1 = 5,869 
-	2= 6,808  (1&2, Áï mgus¿¡¼­ smm => 206¸í)*/ 
+	2= 6,808  (1&2, ÃÃ¯ mgusÂ¿Â¡Â¼Â­ smm => 206Â¸Ã­)*/ 
 
 
 /*outcome definition*/
 data multi_state2; set a;
 format event_date yymmdd8.;
 format event_type $8.;
-outcome = 0;  /*mm ¹ß»ý or death ¹ß»ý È®ÀÎ*/
+outcome = 0;  /*mm Â¹ÃŸÂ»Ã½ or death Â¹ÃŸÂ»Ã½ ÃˆÂ®Ã€ÃŽ*/
 
 if mgus_index_date ne . then do ;
 	event_date = mgus_index_date;
@@ -90,6 +90,38 @@ else time = . ;
 keep jid event_type state time;
 run;
 
+/* End state point : Death */
+proc sql;
+create table multi_model_max as
+select *, max(state) as max_state
+from aa.multi_state_model
+group by jid;
+quit;
+
+data aa.multi_state_model3; set multi_model_max;
+status = state;
+if state=0 then status=max_state; 
+run;
+
+proc sort data=aa.multi_state_model3; by jid time; run;
+
+/*Check time from death to else state */
+data a; set aa.multi_state_model3;
+lag_time=lag(time);
+by jid;
+retain lag_time;
+if first.jid then lag_time=lag(time); 
+run;
+
+data b; set a;
+where time < lag_time ; run;
+
+proc sql; 
+create table check_df as
+select a.jid, b.* 
+from a as a 
+left join multi_state2 as b on a.jid=b.jid; 
+quit;
 
 
 
